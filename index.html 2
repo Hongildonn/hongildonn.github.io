@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A beautifully designed modern webpage featuring a glassmorphic card layout, dark mode aesthetics, multi-phase stepper navigation, and dynamic ambient lighting controls.">
+    <title>My First Webpage - Modern Dark Theme</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #030303;
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --card-border-hover: rgba(255, 255, 255, 0.12);
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --accent-glow: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15), transparent 60%);
+            --accent-color: #6366f1;
+            --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glow Background Effects */
+        .ambient-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--accent-glow);
+            z-index: 1;
+            pointer-events: none;
+            transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .ambient-glow::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08), transparent 50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Main Container Card */
+        .card {
+            position: relative;
+            z-index: 2;
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            padding: 3.5rem 3rem;
+            border-radius: 28px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: fadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: var(--card-border-hover);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8),
+                        0 0 50px rgba(99, 102, 241, 0.08),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Progress/Phase Indicators */
+        .phase-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .indicator-bar {
+            height: 4px;
+            width: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .indicator-bar.active {
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Phase Contents */
+        .phases-container {
+            position: relative;
+            min-height: 150px;
+            margin-bottom: 2.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phase {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .phase.active {
+            position: relative;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0) !important;
+        }
+
+        .phase.exit-left {
+            transform: translateX(-40px);
+            opacity: 0;
+        }
+
+        .phase.exit-right {
+            transform: translateX(40px);
+            opacity: 0;
+        }
+
+        /* Heading Style */
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Paragraph Style */
+        p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        /* Interactive Element (Modern Button Group) */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.25rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--text-primary);
+            color: var(--bg-color);
+            border: none;
+            padding: 0.9rem 2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background: var(--accent-color);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: none;
+        }
+
+        .btn:disabled, .btn-secondary:disabled {
+            opacity: 0.25;
+            transform: none;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none;
+        }
+
+        /* Ambient light controller (for premium interactivity) */
+        .color-picker-container {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .color-picker-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .color-picker {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .color-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background: none;
+            padding: 0;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.35);
+        }
+
+        .color-dot.active {
+            border-color: #ffffff;
+            transform: scale(1.15);
+        }
+
+        .dot-indigo { background: #6366f1; }
+        .dot-emerald { background: #10b981; }
+        .dot-rose { background: #f43f5e; }
+        .dot-amber { background: #f59e0b; }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow" id="glow"></div>
+
+    <main class="card" id="main-content">
+        <!-- Progress Indicators -->
+        <div class="phase-indicator" role="presentation">
+            <div class="indicator-bar active" data-index="0"></div>
+            <div class="indicator-bar" data-index="1"></div>
+            <div class="indicator-bar" data-index="2"></div>
+        </div>
+
+        <!-- Phases Container -->
+        <div class="phases-container">
+            <!-- Phase 1 -->
+            <section class="phase active" id="phase-0" aria-label="Phase 1: Welcome">
+                <h1>Welcome to My Website</h1>
+                <p>This is a basic paragraph of text on a live HTML page, elevated with a modern, glassmorphic layout and dynamic ambient lighting.</p>
+            </section>
+
+            <!-- Phase 2 -->
+            <section class="phase" id="phase-1" aria-label="Phase 2: Interactions">
+                <h1>Seamless Interaction</h1>
+                <p>Customize your atmosphere and experience fluid CSS transitions designed for visual excellence and optimal screen responsiveness.</p>
+            </section>
+
+            <!-- Phase 3 -->
+            <section class="phase" id="phase-2" aria-label="Phase 3: Launch">
+                <h1>Limitless Potential</h1>
+                <p>We build websites that don't just work—they inspire. Set this folder as your workspace to begin tailoring the code further.</p>
+            </section>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        <div class="btn-group">
+            <button class="btn btn-secondary" id="prev-btn" disabled>Previous Phase</button>
+            <button class="btn" id="next-btn">New Phase</button>
+        </div>
+
+        <!-- Ambient Color Selection -->
+        <div class="color-picker-container">
+            <span class="color-picker-label">Choose Ambient Aura</span>
+            <div class="color-picker" role="radiogroup" aria-label="Ambient Aura Color Picker">
+                <button class="color-dot dot-indigo active" data-color="indigo" title="Indigo Aura" aria-checked="true" role="radio" aria-label="Indigo Aura"></button>
+                <button class="color-dot dot-emerald" data-color="emerald" title="Emerald Aura" aria-checked="false" role="radio" aria-label="Emerald Aura"></button>
+                <button class="color-dot dot-rose" data-color="rose" title="Rose Aura" aria-checked="false" role="radio" aria-label="Rose Aura"></button>
+                <button class="color-dot dot-amber" data-color="amber" title="Amber Aura" aria-checked="false" role="radio" aria-label="Amber Aura"></button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Script for Interactive Transitions & Ambient Lighting -->
+    <script>
+        const glow = document.getElementById('glow');
+        const dots = document.querySelectorAll('.color-dot');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const phases = document.querySelectorAll('.phase');
+        const indicators = document.querySelectorAll('.indicator-bar');
+
+        let currentPhase = 0;
+
+        const colors = {
+            indigo: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15), transparent 60%)',
+            emerald: 'radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15), transparent 60%)',
+            rose: 'radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.15), transparent 60%)',
+            amber: 'radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.15), transparent 60%)'
+        };
+
+        const accentColors = {
+            indigo: '#6366f1',
+            emerald: '#10b981',
+            rose: '#f43f5e',
+            amber: '#f59e0b'
+        };
+
+        // Ambient Aura selector logic
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                dots.forEach(d => {
+                    d.classList.remove('active');
+                    d.setAttribute('aria-checked', 'false');
+                });
+                
+                dot.classList.add('active');
+                dot.setAttribute('aria-checked', 'true');
+
+                const theme = dot.getAttribute('data-color');
+                glow.style.background = colors[theme];
+                document.documentElement.style.setProperty('--accent-color', accentColors[theme]);
+                
+                // Keep the active indicator color in sync
+                const activeIndicator = document.querySelector('.indicator-bar.active');
+                if (activeIndicator) {
+                    activeIndicator.style.boxShadow = `0 0 10px ${accentColors[theme]}`;
+                }
+            });
+        });
+
+        // Phase Transitions logic
+        function updatePhases(targetIndex) {
+            if (targetIndex < 0 || targetIndex >= phases.length) return;
+
+            const isNext = targetIndex > currentPhase;
+            const activeColor = document.querySelector('.color-dot.active').getAttribute('data-color');
+            
+            phases.forEach((phase, idx) => {
+                phase.classList.remove('active', 'exit-left', 'exit-right');
+                
+                if (idx === currentPhase) {
+                    // Current phase exits
+                    phase.classList.add(isNext ? 'exit-left' : 'exit-right');
+                } else if (idx === targetIndex) {
+                    // Target phase enters
+                    phase.style.transform = isNext ? 'translateX(40px)' : 'translateX(-40px)';
+                    // Force a browser reflow to reset transitions
+                    void phase.offsetWidth;
+                    phase.classList.add('active');
+                    phase.style.transform = '';
+                }
+            });
+
+            currentPhase = targetIndex;
+
+            // Update Progress Indicator styles
+            indicators.forEach((ind, idx) => {
+                if (idx === currentPhase) {
+                    ind.classList.add('active');
+                    ind.style.boxShadow = `0 0 10px ${accentColors[activeColor]}`;
+                } else {
+                    ind.classList.remove('active');
+                    ind.style.boxShadow = 'none';
+                }
+            });
+
+            // Update Buttons States and Labels
+            prevBtn.disabled = currentPhase === 0;
+            if (currentPhase === phases.length - 1) {
+                nextBtn.textContent = 'Restart';
+            } else {
+                nextBtn.textContent = 'New Phase';
+            }
+        }
+
+        prevBtn.addEventListener('click', () => {
+            updatePhases(currentPhase - 1);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentPhase === phases.length - 1) {
+                updatePhases(0);
+            } else {
+                updatePhases(currentPhase + 1);
+            }
+        });
+    </script>
+</body>
+</html>
